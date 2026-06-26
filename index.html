@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPSS Net Hesaplayıcı — Ücretsiz Puan Hesaplama</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzMiAzMic+PHJlY3Qgd2lkdGg9JzMyJyBoZWlnaHQ9JzMyJyByeD0nNicgZmlsbD0nI2Y5NzMxNicvPjx0ZXh0IHg9JzE2JyB5PScyMycgZmlsbD0nI2ZmZmZmZicgZm9udC1zaXplPScyMCcgZm9udC1mYW1pbHk9J3NhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSdib2xkJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz5LPC90ZXh0Pjwvc3ZnPg==">
+  <meta name="description" content="KPSS Lisans, Önlisans ve Ortaöğretim netlerinizi girerek anında tahmini P1-P10, P93 ve P94 puanlarınızı hesaplayın. Minimalist, hızlı ve mobil uyumlu araç.">
+  
+  <style>
+    /* Clean Minimal CSS Utility Theme */
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      
+      --bg-app: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --border-color: #2a2a2a;
+      --border-focus: #f97316;
+      --text-main: #f3f4f6;
+      --text-muted: #888888;
+      
+      --primary: #f97316;
+      --success: #22c55e;
+      --error: #ef4444;
+      --empty: #262626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1.5rem;
+    }
+
+    .brand-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+
+    .brand-tagline {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Grid Layout */
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .grid-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    /* Flat Card Panels */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    /* Exam Selector */
+    .exam-selector {
+      margin-bottom: 1.5rem;
+    }
+
+    .selector-label {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-main);
+    }
+
+    .tabs-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #0f0f0f;
+      border: 1px solid var(--border-color);
+      padding: 2px;
+      border-radius: 6px;
+      gap: 2px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.6rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: color 0.15s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #000000;
+    }
+
+    /* Subject Cards Grid */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 600px) {
+      .subjects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .category-title {
+      grid-column: 1 / -1;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 1rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-left: 3px solid var(--primary);
+      padding-left: 0.5rem;
+    }
+    
+    .category-title-badge {
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: #2a2a2a;
+      color: var(--text-main);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .subject-card {
+      background: #202020;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .subject-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .subject-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .subject-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .subject-max-questions {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .subject-net-badge {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: #2a2a2a;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* Input Controls */
+    .inputs-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .input-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .input-field-group label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .input-control {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-control input {
+      width: 100%;
+      background: #0f0f0f;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 4px;
+      padding: 0.4rem;
+      text-align: center;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 600;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .input-control input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+    }
+
+    .spin-btn {
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      width: 1.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .spin-btn:hover {
+      color: var(--text-main);
+    }
+
+    .spin-btn.dec { left: 1px; }
+    .spin-btn.inc { right: 1px; }
+
+    /* Flat Progress Indicator */
+    .subject-meter {
+      height: 3px;
+      background: var(--empty);
+      border-radius: 2px;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .meter-segment {
+      height: 100%;
+    }
+
+    .meter-correct { background: var(--success); }
+    .meter-incorrect { background: var(--error); }
+
+    /* Advanced Panel toggle button */
+    .advanced-toggle-card {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      background: #202020;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .advanced-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .advanced-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 2.5rem;
+      height: 1.25rem;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--empty);
+      transition: .2s;
+      border-radius: 10px;
+    }
+
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 0.9rem;
+      width: 0.9rem;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    .switch input:checked + .switch-slider {
+      background-color: var(--primary);
+    }
+
+    .switch input:checked + .switch-slider:before {
+      transform: translateX(1.1rem);
+      background-color: #000000;
+    }
+
+    /* Collapse Area */
+    .collapsible-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.2s ease-out;
+    }
+
+    .collapsible-container.open {
+      max-height: 1500px;
+    }
+
+    /* Warning alert container */
+    .validation-alert {
+      display: none;
+      align-items: center;
+      padding: 0.75rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--error);
+      border-radius: 6px;
+      color: #ef4444;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+
+    /* Results Dashboard Column */
+    .results-panel {
+      position: sticky;
+      top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .summary-stats {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      background: #202020;
+      border-radius: 8px;
+      padding: 1.25rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .stat-number-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-large-val {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    .action-buttons-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      width: 100%;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .action-row .reset-btn,
+    .action-row .share-btn {
+      flex: 1;
+      margin-top: 0;
+      height: 2.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .reset-btn {
+      background: #2a2a2a;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .reset-btn:hover {
+      background: #333333;
+      color: var(--text-main);
+      border-color: #444444;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 2.15rem;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .share-btn:hover {
+      opacity: 0.85;
+    }
+
+    .share-btn svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .share-btn.whatsapp {
+      background-color: #25d366;
+      color: #000000;
+      border-color: #25d366;
+    }
+
+    .share-btn.twitter {
+      background-color: #ffffff;
+      color: #000000;
+      border-color: #ffffff;
+    }
+
+    .stat-labels {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+      justify-content: center;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+
+    .stat-name {
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Score Cards List */
+    .scores-section-header {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .scores-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .score-row-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #202020;
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+    }
+
+    .score-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .score-title-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .score-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .score-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+
+    .score-badge.popular {
+      background: #f97316;
+      color: #000000;
+    }
+    
+    .score-badge.advanced-type {
+      background: #2a2a2a;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .score-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .score-result-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: right;
+    }
+
+    .score-row-card.highlighted {
+      border-color: var(--primary);
+    }
+
+    .info-footer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      background: #1a1a1a;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <h1 class="brand-title">KPSS Net & Puan Hesaplayıcı</h1>
+        <p class="brand-tagline">Detaylı ve anında net hesabı ile tahmini sınav puanlarınız</p>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="grid-layout">
+      
+      <!-- Left Column: Inputs Form -->
+      <section class="glass-card">
+        
+        <!-- Exam Selector -->
+        <div class="exam-selector">
+          <h2 class="selector-label">Sınav Türünü Seçin</h2>
+          <div class="tabs-container">
+            <button class="tab-btn active" data-exam="lisans">Lisans</button>
+            <button class="tab-btn" data-exam="onlisans">Önlisans</button>
+            <button class="tab-btn" data-exam="ortaogretim">Ortaöğretim</button>
+          </div>
+        </div>
+
+        <!-- Validation warning -->
+        <div class="validation-alert" id="validationAlert">
+          <span id="validationMsg">Doğru ve yanlış soru sayısı toplamı maksimum soru sınırını aşamaz!</span>
+        </div>
+
+        <!-- Subjects Input Form container -->
+        <form id="kpssForm" onsubmit="event.preventDefault();">
+          <div class="subjects-grid" id="subjectsGrid">
+            <!-- Dynamic Subject Input Cards -->
+          </div>
+
+          <!-- Advanced / Optional Exams Toggle (Lisans only) -->
+          <div class="subject-card advanced-toggle-card" id="advancedToggleCard">
+            <div>
+              <div class="advanced-title">Alan Sınavı & Eğitim Bilimleri</div>
+              <div class="advanced-desc">P4 - P10 puan türlerini hesaplamak için açın</div>
+            </div>
+            <label class="switch" aria-label="Alan sınavı ve Eğitim Bilimleri girişini aç/kapat">
+              <input type="checkbox" id="advancedSwitch">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Advanced collapsible area -->
+          <div class="collapsible-container" id="advancedCollapseArea">
+            <div class="subjects-grid" id="advancedSubjectsGrid" style="margin-top: 1rem;">
+              <!-- Dynamic Advanced Cards -->
+            </div>
+          </div>
+        </form>
+
+      </section>
+
+      <!-- Right Column: Sticky Results Dashboard -->
+      <section class="results-panel">
+        
+        <div class="glass-card">
+          <h2 class="selector-label">Genel Sonuç Özeti</h2>
+          
+          <div class="summary-stats">
+            <div class="stat-number-box">
+              <span class="stat-large-val" id="summaryNet">0.00</span>
+              <span class="stat-label">Toplam Net</span>
+              <div class="action-buttons-grid">
+                <div class="action-row">
+                  <button type="button" class="reset-btn" id="resetBtn">Sıfırla</button>
+                  <button type="button" class="reset-btn" id="copyBtn">Sonucu Kopyala</button>
+                </div>
+                <div class="action-row">
+                  <a href="#" target="_blank" class="share-btn whatsapp" id="shareWa" aria-label="WhatsApp'ta Paylaş">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.94 5.86L2.6 22l4.31-1.13C8.42 21.5 10.13 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm3.3 12.87c-.19.53-1.11 1.04-1.52 1.09-.36.04-.83.06-2.33-.56-1.91-.79-3.14-2.73-3.23-2.86-.1-.13-.78-1.04-.78-1.99 0-.95.49-1.41.67-1.6.13-.14.28-.21.43-.21h.35c.13 0 .24.01.34.24.11.26.37.91.4 1 .03.09.05.2.01.29-.04.09-.08.19-.16.29-.08.09-.16.19-.24.28-.09.09-.19.19-.08.38.11.19.49.8 1.05 1.3.72.65 1.33.85 1.52.94.19.09.3.08.41-.05.11-.13.49-.57.62-.76.13-.19.26-.16.44-.09.18.06 1.13.53 1.33.63.19.09.28.14.33.22.05.08.05.47-.14 1z"/>
+                    </svg>
+                  </a>
+                  <a href="#" target="_blank" class="share-btn twitter" id="shareTw" aria-label="Twitter/X'te Paylaş">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quantitative Stats -->
+            <div class="stat-labels">
+              <div class="stat-row">
+                <span class="stat-name">Doğru:</span>
+                <span class="stat-val" id="summaryCorrect">0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Yanlış:</span>
+                <span class="stat-val" id="summaryIncorrect">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estimated Scores Dashboard -->
+        <div class="glass-card">
+          <div class="scores-section-header">
+            <h2 class="selector-label" style="margin-bottom:0;">Tahmini KPSS Puanları</h2>
+            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:500;">Ölçek: 50 - 100</span>
+          </div>
+
+          <div class="scores-list" id="scoresList">
+            <!-- Dynamic Score Row Cards -->
+          </div>
+        </div>
+
+        <!-- Info/Disclaimer Box -->
+        <div class="info-footer">
+          <strong>Tahmini Hesaplama Bilgilendirmesi</strong><br>
+          Bu puanlar, ÖSYM'nin ham katsayı ağırlıkları kullanılarak doğrusal yaklaşımla hesaplanmıştır. Gerçek KPSS sınav sonuçlarında, Türkiye geneli ortalamaları ve standart sapma değerleri nedeniyle puanınız değişiklik gösterebilir.
+        </div>
+
+      </section>
+
+    </div>
+
+    <footer>
+      <p>&copy; 2026 KPSS Net & Puan Hesaplama Robotu. Tüm hakları saklıdır.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Configuration Data (Question counts simplified, icons removed)
+    const examConfigs = {
+      lisans: {
+        subjects: [
+          { id: 'turkce', name: 'Türkçe', max: 30, category: 'Genel Yetenek' },
+          { id: 'matematik', name: 'Matematik', max: 30, category: 'Genel Yetenek' },
+          { id: 'tarih', name: 'Tarih', max: 27, category: 'Genel Kültür' },
+          { id: 'cografya', name: 'Coğrafya', max: 18, category: 'Genel Kültür' },
+          { id: 'vatandaslik', name: 'Vatandaşlık', max: 9, category: 'Genel Kültür' },
+          { id: 'guncel', name: 'Güncel Bilgiler', max: 6, category: 'Genel Kültür' }
+        ],
+        advanced: [
+          { id: 'eb', name: 'Eğitim Bilimleri', max: 80, category: 'Eğitim' },
+          { id: 'hukuk', name: 'Hukuk', max: 40, category: 'Alan Bilgisi' },
+          { id: 'iktisat', name: 'İktisat', max: 40, category: 'Alan Bilgisi' },
+          { id: 'maliye', name: 'Maliye', max: 40, category: 'Alan Bilgisi' },
+          { id: 'kamu', name: 'Kamu Yönetimi', max: 40, category: 'Alan Bilgisi' }
+        ]
+      },
+      onlisans: {
+        subjects: [
+          { id: 'turkce', name: 'Türkçe', max: 30, category: 'Genel Yetenek' },
+          { id: 'matematik', name: 'Matematik', max: 30, category: 'Genel Yetenek' },
+          { id: 'tarih', name: 'Tarih', max: 27, category: 'Genel Kültür' },
+          { id: 'cografya', name: 'Coğrafya', max: 18, category: 'Genel Kültür' },
+          { id: 'vatandaslik', name: 'Vatandaşlık', max: 9, category: 'Genel Kültür' },
+          { id: 'guncel', name: 'Güncel Bilgiler', max: 6, category: 'Genel Kültür' }
+        ]
+      },
+      ortaogretim: {
+        subjects: [
+          { id: 'turkce', name: 'Türkçe', max: 30, category: 'Genel Yetenek' },
+          { id: 'matematik', name: 'Matematik', max: 30, category: 'Genel Yetenek' },
+          { id: 'tarih', name: 'Tarih', max: 27, category: 'Genel Kültür' },
+          { id: 'cografya', name: 'Coğrafya', max: 18, category: 'Genel Kültür' },
+          { id: 'vatandaslik', name: 'Vatandaşlık', max: 9, category: 'Genel Kültür' },
+          { id: 'guncel', name: 'Güncel Bilgiler', max: 6, category: 'Genel Kültür' }
+        ]
+      }
+    };
+
+    const scoreConfigs = {
+      lisans: [
+        { id: 'p1', name: 'KPSS P1', desc: 'Genel Yetenek %70 + Genel Kültür %30', weights: { gy: 0.70, gk: 0.30 }, tag: 'Mühendislik' },
+        { id: 'p2', name: 'KPSS P2', desc: 'Genel Yetenek %60 + Genel Kültür %40', weights: { gy: 0.60, gk: 0.40 }, tag: 'Uzmanlık' },
+        { id: 'p3', name: 'KPSS P3', desc: 'Genel Yetenek %50 + Genel Kültür %50', weights: { gy: 0.50, gk: 0.50 }, tag: 'En Yaygın / B Grubu', highlighted: true },
+        { id: 'p4', name: 'KPSS P4', desc: 'GY %20 + GK %20 + Hukuk %60', weights: { gy: 0.20, gk: 0.20, hukuk: 0.60 }, tag: 'Alan Sınavı', advanced: true },
+        { id: 'p5', name: 'KPSS P5', desc: 'GY %15 + GK %15 + Hukuk %50 + İktisat %20', weights: { gy: 0.15, gk: 0.15, hukuk: 0.50, iktisat: 0.20 }, tag: 'Alan Sınavı', advanced: true },
+        { id: 'p6', name: 'KPSS P6', desc: 'GY %15 + GK %15 + Hukuk %40 + Kamu Yön. %30', weights: { gy: 0.15, gk: 0.15, hukuk: 0.40, kamu: 0.30 }, tag: 'Alan Sınavı', advanced: true },
+        { id: 'p7', name: 'KPSS P7', desc: 'GY %15 + GK %15 + Hukuk %40 + İktisat %30', weights: { gy: 0.15, gk: 0.15, hukuk: 0.40, iktisat: 0.30 }, tag: 'Alan Sınavı', advanced: true },
+        { id: 'p8', name: 'KPSS P8', desc: 'GY %15 + GK %10 + Hukuk %35 + İktisat %20 + Maliye %20', weights: { gy: 0.15, gk: 0.10, hukuk: 0.35, iktisat: 0.20, maliye: 0.20 }, tag: 'Alan Sınavı', advanced: true },
+        { id: 'p9', name: 'KPSS P9', desc: 'GY %10 + GK %10 + Hukuk %35 + İkt. %15 + Mal. %15 + Kamu %15', weights: { gy: 0.10, gk: 0.10, hukuk: 0.35, iktisat: 0.15, maliye: 0.15, kamu: 0.15 }, tag: 'Alan Sınavı', advanced: true },
+        { id: 'p10', name: 'KPSS P10', desc: 'Genel Yetenek %30 + Genel Kültür %30 + Eğitim Bil. %40', weights: { gy: 0.30, gk: 0.30, eb: 0.40 }, tag: 'Öğretmenlik', advanced: true }
+      ],
+      onlisans: [
+        { id: 'p93', name: 'KPSS P93', desc: 'Genel Yetenek %50 + Genel Kültür %50', weights: { gy: 0.50, gk: 0.50 }, tag: 'Önlisans B Grubu', highlighted: true }
+      ],
+      ortaogretim: [
+        { id: 'p94', name: 'KPSS P94', desc: 'Genel Yetenek %50 + Genel Kültür %50', weights: { gy: 0.50, gk: 0.50 }, tag: 'Ortaöğretim B Grubu', highlighted: true }
+      ]
+    };
+
+    // State Variables
+    let currentExamType = 'lisans';
+    let inputValues = {};
+    let isAdvancedOpen = false;
+
+    // Selectors
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const subjectsGrid = document.getElementById('subjectsGrid');
+    const advancedSubjectsGrid = document.getElementById('advancedSubjectsGrid');
+    const advancedToggleCard = document.getElementById('advancedToggleCard');
+    const advancedSwitch = document.getElementById('advancedSwitch');
+    const advancedCollapseArea = document.getElementById('advancedCollapseArea');
+    const validationAlert = document.getElementById('validationAlert');
+    const validationMsg = document.getElementById('validationMsg');
+    
+    // Result displays
+    const summaryNet = document.getElementById('summaryNet');
+    const summaryCorrect = document.getElementById('summaryCorrect');
+    const summaryIncorrect = document.getElementById('summaryIncorrect');
+    const scoresList = document.getElementById('scoresList');
+
+    // Initialize application
+    function init() {
+      // Event listeners for exam type tabs
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentExamType = btn.dataset.exam;
+          
+          // Reset switch when toggling exam type
+          advancedSwitch.checked = false;
+          isAdvancedOpen = false;
+          advancedCollapseArea.classList.remove('open');
+          
+          renderForms();
+          resetInputs();
+        });
+      });
+
+      // Event listener for advanced switch
+      advancedSwitch.addEventListener('change', (e) => {
+        isAdvancedOpen = e.target.checked;
+        if (isAdvancedOpen) {
+          advancedCollapseArea.classList.add('open');
+        } else {
+          advancedCollapseArea.classList.remove('open');
+        }
+        calculateResults();
+      });
+
+      // Event listener for reset button
+      document.getElementById('resetBtn').addEventListener('click', resetInputs);
+
+      // Event listener for copy button
+      document.getElementById('copyBtn').addEventListener('click', copyResults);
+
+      // Setup dynamic share URLs with empty site-url placeholder
+      const siteUrl = '';
+      document.getElementById('shareWa').href = `https://wa.me/?text=KPSS%20Net%20Hesaplayıcı%20kullandım!%20Sen%20de%20dene:%20${encodeURIComponent(siteUrl)}`;
+      document.getElementById('shareTw').href = `https://twitter.com/intent/tweet?text=KPSS%20netlerimi%20hesapladım!%20${encodeURIComponent(siteUrl)}`;
+
+      renderForms();
+      resetInputs();
+    }
+
+    // Reset all inputs to 0
+    function resetInputs() {
+      inputValues = {};
+      const config = examConfigs[currentExamType];
+      config.subjects.forEach(sub => {
+        inputValues[sub.id] = { d: 0, y: 0, net: 0, max: sub.max };
+      });
+      if (currentExamType === 'lisans' && config.advanced) {
+        config.advanced.forEach(sub => {
+          inputValues[sub.id] = { d: 0, y: 0, net: 0, max: sub.max };
+        });
+      }
+      
+      document.querySelectorAll('#kpssForm input[type="number"]').forEach(input => {
+        input.value = 0;
+      });
+
+      calculateResults();
+    }
+
+    // Copy results to clipboard
+    function copyResults() {
+      const typeMap = {
+        lisans: { name: 'Lisans', scoreId: 'P3' },
+        onlisans: { name: 'Önlisans', scoreId: 'P93' },
+        ortaogretim: { name: 'Ortaöğretim', scoreId: 'P94' }
+      };
+
+      const currentType = typeMap[currentExamType];
+      const totalNetStr = document.getElementById('summaryNet').textContent;
+      
+      const highlightedCard = document.querySelector('.score-row-card.highlighted .score-result-val');
+      const scoreValStr = highlightedCard ? highlightedCard.textContent : '50.00';
+
+      const copyText = `KPSS ${currentType.name} Sonucum — Toplam Net: ${totalNetStr} | Tahmini ${currentType.scoreId}: ${scoreValStr}`;
+
+      navigator.clipboard.writeText(copyText).then(() => {
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.textContent = 'Kopyalandı ✓';
+        setTimeout(() => {
+          copyBtn.textContent = 'Sonucu Kopyala';
+        }, 2000);
+      }).catch(err => {
+        console.error('Kopyalama hatası:', err);
+      });
+    }
+
+    // Dynamic rendering of cards
+    function renderForms() {
+      const config = examConfigs[currentExamType];
+      let normalHtml = '';
+      let lastCategory = '';
+      
+      config.subjects.forEach(sub => {
+        if (sub.category !== lastCategory) {
+          lastCategory = sub.category;
+          const catMax = config.subjects
+            .filter(s => s.category === lastCategory)
+            .reduce((sum, s) => sum + s.max, 0);
+          normalHtml += `
+            <div class="category-title">
+              <span>${lastCategory}</span>
+              <span class="category-title-badge">${catMax} Soru</span>
+            </div>
+          `;
+        }
+        normalHtml += renderSubjectCard(sub);
+      });
+      subjectsGrid.innerHTML = normalHtml;
+
+      if (currentExamType === 'lisans' && config.advanced) {
+        advancedToggleCard.classList.remove('hidden');
+        advancedCollapseArea.classList.remove('hidden');
+        
+        let advancedHtml = '';
+        let lastAdvCategory = '';
+        
+        config.advanced.forEach(sub => {
+          if (sub.category !== lastAdvCategory) {
+            lastAdvCategory = sub.category;
+            advancedHtml += `
+              <div class="category-title" style="border-left-color: var(--primary);">
+                <span>${lastAdvCategory}</span>
+              </div>
+            `;
+          }
+          advancedHtml += renderSubjectCard(sub);
+        });
+        advancedSubjectsGrid.innerHTML = advancedHtml;
+      } else {
+        advancedToggleCard.classList.add('hidden');
+        advancedCollapseArea.classList.add('hidden');
+      }
+
+      setupFormListeners();
+    }
+
+    function renderSubjectCard(sub) {
+      return `
+        <div class="subject-card" id="card-${sub.id}">
+          <div class="subject-header">
+            <div class="subject-meta">
+              <span class="subject-name">${sub.name}</span>
+              <span class="subject-max-questions">${sub.max} Soru</span>
+            </div>
+            <div class="subject-net-badge" id="net-badge-${sub.id}">0.00 Net</div>
+          </div>
+          
+          <div class="inputs-container">
+            <div class="input-field-group">
+              <label for="d-${sub.id}">Doğru</label>
+              <div class="input-control">
+                <button type="button" class="spin-btn dec" onclick="stepVal('${sub.id}', 'd', -1)" aria-label="Azalt">-</button>
+                <input type="number" id="d-${sub.id}" min="0" max="${sub.max}" value="0" oninput="validateAndUpdate('${sub.id}', 'd')">
+                <button type="button" class="spin-btn inc" onclick="stepVal('${sub.id}', 'd', 1)" aria-label="Arttır">+</button>
+              </div>
+            </div>
+            
+            <div class="input-field-group">
+              <label for="y-${sub.id}">Yanlış</label>
+              <div class="input-control">
+                <button type="button" class="spin-btn dec" onclick="stepVal('${sub.id}', 'y', -1)" aria-label="Azalt">-</button>
+                <input type="number" id="y-${sub.id}" min="0" max="${sub.max}" value="0" oninput="validateAndUpdate('${sub.id}', 'y')">
+                <button type="button" class="spin-btn inc" onclick="stepVal('${sub.id}', 'y', 1)" aria-label="Arttır">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="subject-meter">
+            <div class="meter-segment meter-correct" id="meter-correct-${sub.id}" style="width: 0%"></div>
+            <div class="meter-segment meter-incorrect" id="meter-incorrect-${sub.id}" style="width: 0%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setupFormListeners() {
+      const inputs = document.querySelectorAll('#kpssForm input[type="number"]');
+      inputs.forEach(input => {
+        input.addEventListener('keydown', (e) => {
+          if (['e', 'E', '+', '-', '.'].includes(e.key)) {
+            e.preventDefault();
+          }
+        });
+      });
+    }
+
+    window.stepVal = function(subId, type, delta) {
+      const input = document.getElementById(`${type}-${subId}`);
+      let currentVal = parseInt(input.value) || 0;
+      let newVal = Math.max(0, Math.min(inputValues[subId].max, currentVal + delta));
+      input.value = newVal;
+      validateAndUpdate(subId, type);
+    };
+
+    window.validateAndUpdate = function(subId, activeField) {
+      const dInput = document.getElementById(`d-${subId}`);
+      const yInput = document.getElementById(`y-${subId}`);
+      const cardElement = document.getElementById(`card-${subId}`);
+      
+      let dVal = parseInt(dInput.value) || 0;
+      let yVal = parseInt(yInput.value) || 0;
+      const subMax = inputValues[subId].max;
+
+      if (dInput.value === '') dVal = 0;
+      if (yInput.value === '') yVal = 0;
+
+      if (dVal + yVal > subMax) {
+        validationMsg.textContent = `"${inputValues[subId].name}" için girdiğiniz doğru ve yanlış sayıları toplamı maksimum soru sayısı olan ${subMax} değerini aşamaz!`;
+        validationAlert.style.display = 'block';
+        cardElement.style.borderColor = 'var(--error)';
+
+        if (activeField === 'd') {
+          yVal = subMax - dVal;
+          yInput.value = yVal;
+        } else {
+          dVal = subMax - yVal;
+          dInput.value = dVal;
+        }
+
+        setTimeout(() => {
+          validationAlert.style.display = 'none';
+          cardElement.style.borderColor = '';
+        }, 3000);
+      } else {
+        cardElement.style.borderColor = '';
+      }
+
+      const net = dVal - (yVal * 0.25);
+      inputValues[subId].d = dVal;
+      inputValues[subId].y = yVal;
+      inputValues[subId].net = net;
+
+      document.getElementById(`net-badge-${subId}`).textContent = `${net.toFixed(2)} Net`;
+      
+      const correctPct = (dVal / subMax) * 100;
+      const incorrectPct = (yVal / subMax) * 100;
+      document.getElementById(`meter-correct-${subId}`).style.width = `${correctPct}%`;
+      document.getElementById(`meter-incorrect-${subId}`).style.width = `${incorrectPct}%`;
+
+      calculateResults();
+    };
+
+    function calculateResults() {
+      const config = examConfigs[currentExamType];
+      
+      let gyCorrect = 0, gyIncorrect = 0, gyNets = 0, gyMax = 0;
+      let gkCorrect = 0, gkIncorrect = 0, gkNets = 0, gkMax = 0;
+
+      config.subjects.forEach(sub => {
+        const val = inputValues[sub.id] || { d: 0, y: 0, net: 0, max: sub.max };
+        if (sub.id === 'turkce' || sub.id === 'matematik') {
+          gyCorrect += val.d;
+          gyIncorrect += val.y;
+          gyNets += (val.d - val.y * 0.25);
+          gyMax += sub.max;
+        } else {
+          gkCorrect += val.d;
+          gkIncorrect += val.y;
+          gkNets += (val.d - val.y * 0.25);
+          gkMax += sub.max;
+        }
+      });
+
+      let ebCorrect = 0, ebIncorrect = 0, ebNets = 0, ebMax = 80;
+      let hukukCorrect = 0, hukukIncorrect = 0, hukukNets = 0, hukukMax = 40;
+      let iktisatCorrect = 0, iktisatIncorrect = 0, iktisatNets = 0, iktisatMax = 40;
+      let maliyeCorrect = 0, maliyeIncorrect = 0, maliyeNets = 0, maliyeMax = 40;
+      let kamuCorrect = 0, kamuIncorrect = 0, kamuNets = 0, kamuMax = 40;
+
+      if (currentExamType === 'lisans' && isAdvancedOpen) {
+        const ebVal = inputValues['eb'] || { d: 0, y: 0 };
+        ebCorrect = ebVal.d;
+        ebIncorrect = ebVal.y;
+        ebNets = ebVal.d - ebVal.y * 0.25;
+
+        const hukVal = inputValues['hukuk'] || { d: 0, y: 0 };
+        hukukCorrect = hukVal.d;
+        hukukIncorrect = hukVal.y;
+        hukukNets = hukVal.d - hukVal.y * 0.25;
+
+        const iktVal = inputValues['iktisat'] || { d: 0, y: 0 };
+        iktisatCorrect = iktVal.d;
+        iktisatIncorrect = iktVal.y;
+        iktisatNets = iktVal.d - iktVal.y * 0.25;
+
+        const malVal = inputValues['maliye'] || { d: 0, y: 0 };
+        maliyeCorrect = malVal.d;
+        maliyeIncorrect = malVal.y;
+        maliyeNets = malVal.d - malVal.y * 0.25;
+
+        const kamVal = inputValues['kamu'] || { d: 0, y: 0 };
+        kamuCorrect = kamVal.d;
+        kamuIncorrect = kamVal.y;
+        kamuNets = kamVal.d - kamVal.y * 0.25;
+      }
+
+      const totalCorrect = gyCorrect + gkCorrect + (isAdvancedOpen ? (ebCorrect + hukukCorrect + iktisatCorrect + maliyeCorrect + kamuCorrect) : 0);
+      const totalIncorrect = gyIncorrect + gkIncorrect + (isAdvancedOpen ? (ebIncorrect + hukukIncorrect + iktisatIncorrect + maliyeIncorrect + kamuIncorrect) : 0);
+      const totalNet = (gyNets + gkNets) + (isAdvancedOpen ? (ebNets + hukukNets + iktisatNets + maliyeNets + kamuNets) : 0);
+
+      summaryCorrect.textContent = totalCorrect;
+      summaryIncorrect.textContent = totalIncorrect;
+      summaryNet.textContent = totalNet.toFixed(2);
+
+      const scores = scoreConfigs[currentExamType];
+      let scoresHtml = '';
+
+      scores.forEach(score => {
+        let ratio = 0;
+        let requiresAdvancedInput = false;
+
+        let gyRatio = Math.max(0, gyNets / gyMax);
+        let gkRatio = Math.max(0, gkNets / gkMax);
+        let ebRatio = Math.max(0, ebNets / ebMax);
+        let hukukRatio = Math.max(0, hukukNets / hukukMax);
+        let iktisatRatio = Math.max(0, iktisatNets / iktisatMax);
+        let maliyeRatio = Math.max(0, maliyeNets / maliyeMax);
+        let kamuRatio = Math.max(0, kamuNets / kamuMax);
+
+        const w = score.weights;
+        ratio += w.gy * gyRatio;
+        ratio += w.gk * gkRatio;
+
+        if (w.eb !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.eb * ebRatio;
+        }
+        if (w.hukuk !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.hukuk * hukukRatio;
+        }
+        if (w.iktisat !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.iktisat * iktisatRatio;
+        }
+        if (w.maliye !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.maliye * maliyeRatio;
+        }
+        if (w.kamu !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.kamu * kamuRatio;
+        }
+
+        let calculatedPuan = 50 + 50 * ratio;
+        calculatedPuan = Math.max(50, Math.min(100, calculatedPuan));
+
+        const highlightClass = score.highlighted ? 'highlighted' : '';
+        const badgeClass = score.highlighted ? 'popular' : 'advanced-type';
+        const displayScore = requiresAdvancedInput 
+          ? `<span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Alan Neti Gerekli</span>` 
+          : calculatedPuan.toFixed(2);
+
+        scoresHtml += `
+          <div class="score-row-card ${highlightClass}">
+            <div class="score-details">
+              <div class="score-title-group">
+                <span class="score-name">${score.name}</span>
+                <span class="score-badge ${badgeClass}">${score.tag}</span>
+              </div>
+              <span class="score-desc">${score.desc}</span>
+            </div>
+            <div class="score-result-val">${displayScore}</div>
+          </div>
+        `;
+      });
+
+      scoresList.innerHTML = scoresHtml;
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
