@@ -1277,3 +1277,125 @@
         const val = inputValues[sub.id] || { d: 0, y: 0, net: 0, max: sub.max };
         if (sub.id === 'turkce' || sub.id === 'matematik') {
           gyCorrect += val.d;
+          gyIncorrect += val.y;
+          gyNets += (val.d - val.y * 0.25);
+          gyMax += sub.max;
+        } else {
+          gkCorrect += val.d;
+          gkIncorrect += val.y;
+          gkNets += (val.d - val.y * 0.25);
+          gkMax += sub.max;
+        }
+      });
+
+      let ebCorrect = 0, ebIncorrect = 0, ebNets = 0, ebMax = 80;
+      let hukukCorrect = 0, hukukIncorrect = 0, hukukNets = 0, hukukMax = 40;
+      let iktisatCorrect = 0, iktisatIncorrect = 0, iktisatNets = 0, iktisatMax = 40;
+      let maliyeCorrect = 0, maliyeIncorrect = 0, maliyeNets = 0, maliyeMax = 40;
+      let kamuCorrect = 0, kamuIncorrect = 0, kamuNets = 0, kamuMax = 40;
+
+      if (currentExamType === 'lisans' && isAdvancedOpen) {
+        const ebVal = inputValues['eb'] || { d: 0, y: 0 };
+        ebCorrect = ebVal.d;
+        ebIncorrect = ebVal.y;
+        ebNets = ebVal.d - ebVal.y * 0.25;
+
+        const hukVal = inputValues['hukuk'] || { d: 0, y: 0 };
+        hukukCorrect = hukVal.d;
+        hukukIncorrect = hukVal.y;
+        hukukNets = hukVal.d - hukVal.y * 0.25;
+
+        const iktVal = inputValues['iktisat'] || { d: 0, y: 0 };
+        iktisatCorrect = iktVal.d;
+        iktisatIncorrect = iktVal.y;
+        iktisatNets = iktVal.d - iktVal.y * 0.25;
+
+        const malVal = inputValues['maliye'] || { d: 0, y: 0 };
+        maliyeCorrect = malVal.d;
+        maliyeIncorrect = malVal.y;
+        maliyeNets = malVal.d - malVal.y * 0.25;
+
+        const kamVal = inputValues['kamu'] || { d: 0, y: 0 };
+        kamuCorrect = kamVal.d;
+        kamuIncorrect = kamVal.y;
+        kamuNets = kamVal.d - kamVal.y * 0.25;
+      }
+
+      const totalCorrect = gyCorrect + gkCorrect + (isAdvancedOpen ? (ebCorrect + hukukCorrect + iktisatCorrect + maliyeCorrect + kamuCorrect) : 0);
+      const totalIncorrect = gyIncorrect + gkIncorrect + (isAdvancedOpen ? (ebIncorrect + hukukIncorrect + iktisatIncorrect + maliyeIncorrect + kamuIncorrect) : 0);
+      const totalNet = (gyNets + gkNets) + (isAdvancedOpen ? (ebNets + hukukNets + iktisatNets + maliyeNets + kamuNets) : 0);
+
+      summaryCorrect.textContent = totalCorrect;
+      summaryIncorrect.textContent = totalIncorrect;
+      summaryNet.textContent = totalNet.toFixed(2);
+
+      const scores = scoreConfigs[currentExamType];
+      let scoresHtml = '';
+
+      scores.forEach(score => {
+        let ratio = 0;
+        let requiresAdvancedInput = false;
+
+        let gyRatio = Math.max(0, gyNets / gyMax);
+        let gkRatio = Math.max(0, gkNets / gkMax);
+        let ebRatio = Math.max(0, ebNets / ebMax);
+        let hukukRatio = Math.max(0, hukukNets / hukukMax);
+        let iktisatRatio = Math.max(0, iktisatNets / iktisatMax);
+        let maliyeRatio = Math.max(0, maliyeNets / maliyeMax);
+        let kamuRatio = Math.max(0, kamuNets / kamuMax);
+
+        const w = score.weights;
+        ratio += w.gy * gyRatio;
+        ratio += w.gk * gkRatio;
+
+        if (w.eb !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.eb * ebRatio;
+        }
+        if (w.hukuk !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.hukuk * hukukRatio;
+        }
+        if (w.iktisat !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.iktisat * iktisatRatio;
+        }
+        if (w.maliye !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.maliye * maliyeRatio;
+        }
+        if (w.kamu !== undefined) {
+          if (!isAdvancedOpen) requiresAdvancedInput = true;
+          ratio += w.kamu * kamuRatio;
+        }
+
+        let calculatedPuan = 50 + 50 * ratio;
+        calculatedPuan = Math.max(50, Math.min(100, calculatedPuan));
+
+        const highlightClass = score.highlighted ? 'highlighted' : '';
+        const badgeClass = score.highlighted ? 'popular' : 'advanced-type';
+        const displayScore = requiresAdvancedInput 
+          ? `<span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Alan Neti Gerekli</span>` 
+          : calculatedPuan.toFixed(2);
+
+        scoresHtml += `
+          <div class="score-row-card ${highlightClass}">
+            <div class="score-details">
+              <div class="score-title-group">
+                <span class="score-name">${score.name}</span>
+                <span class="score-badge ${badgeClass}">${score.tag}</span>
+              </div>
+              <span class="score-desc">${score.desc}</span>
+            </div>
+            <div class="score-result-val">${displayScore}</div>
+          </div>
+        `;
+      });
+
+      scoresList.innerHTML = scoresHtml;
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
