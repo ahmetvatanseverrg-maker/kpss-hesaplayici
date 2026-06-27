@@ -37,6 +37,43 @@
   }
   </script>
 
+  <!-- FAQ Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": "KPSS Puanı Nasıl Hesaplanır?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "KPSS puanları, adayların Genel Yetenek ve Genel Kültür (varsa Eğitim Bilimleri ve Alan Sınavı) testlerinden elde ettikleri net sayıları (Doğru Sayısı - Yanlış Sayısı/4) üzerinden hesaplanır. ÖSYM'nin standart sapma ve ortalama katsayıları temel alınarak geliştirilen formüllerle 50 ile 100 puan aralığına dönüştürülür."
+      }
+    }, {
+      "@type": "Question",
+      "name": "KPSS'de 4 Yanlış 1 Doğruyu Götürür mü?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Evet, KPSS'de uygulanan kural gereği her test kendi içinde değerlendirilir ve yaptığınız her 4 yanlış cevap, 1 doğru cevabınızı (0.25 net azaltarak) götürür. Boş bırakılan (işaretlenmeyen) sorular net hesabınızı ya da puanınızı olumsuz etkilemez."
+      }
+    }, {
+      "@type": "Question",
+      "name": "Standart Sapma KPSS Puanını Nasıl Etkiler?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standart sapma, bir testteki soruların Türkiye genelindeki yapılabilme zorluğunu ölçer. Çok az adayın doğru yanıtladığı veya genel olarak düşük net yapılan zor bir testten yüksek net elde etmek, standart sapma etkisiyle puanınızı ortalamanın üzerine taşıyacak ve puan artışı sağlayacaktır."
+      }
+    }, {
+      "@type": "Question",
+      "name": "P1, P2, P3, P93 ve P94 Puan Türleri Ne Demektir?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "KPSS P3: Lisans mezunlarının B Grubu kadrolara (düz memurluk, mühendislik vb.) başvurularında kullanılır. KPSS P93: Önlisans mezunları için B Grubu kadrolarda geçerlidir. KPSS P94: Ortaöğretim (lise) mezunları için B Grubu memurluk alımlarında geçerlidir. P1 ve P2: Genel Yetenek ağırlıklı hesaplanan, mühendislik ve bazı kurum içi uzman kadroları için kullanılan puan türleridir."
+      }
+    }]
+  }
+  </script>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CMJ8KLGNFF"></script>
   <script>
@@ -678,6 +715,52 @@
     .hidden {
       display: none !important;
     }
+
+    /* FAQ Accordion Styling */
+    .faq-item {
+      background: #202020;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.15s ease;
+    }
+
+    .faq-item[open] {
+      border-color: var(--primary);
+    }
+
+    .faq-question {
+      padding: 1rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .faq-question::after {
+      content: "+";
+      font-size: 1.15rem;
+      color: var(--primary);
+      transition: transform 0.2s ease;
+    }
+
+    .faq-item[open] .faq-question::after {
+      content: "−";
+    }
+
+    .faq-answer {
+      padding: 0 1rem 1rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.75rem;
+    }
   </style>
 </head>
 <body>
@@ -806,6 +889,45 @@
       </section>
 
     </div>
+
+    <!-- FAQ Section -->
+    <section class="glass-card" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+      <h2 class="selector-label" style="font-size: 1.15rem; border-left: 3px solid var(--primary); padding-left: 0.5rem; margin-bottom: 1.25rem;">KPSS Hakkında Sıkça Sorulan Sorular (SSS)</h2>
+      <div class="faq-container">
+        
+        <details class="faq-item">
+          <summary class="faq-question">KPSS Puanı Nasıl Hesaplanır?</summary>
+          <div class="faq-answer">
+            <p>KPSS puanları, adayların Genel Yetenek ve Genel Kültür (varsa Eğitim Bilimleri ve Alan Sınavı) testlerinden elde ettikleri net sayıları (Doğru Sayısı - Yanlış Sayısı/4) üzerinden hesaplanır. ÖSYM'nin standart sapma ve ortalama katsayıları temel alınarak geliştirilen formüllerle 50 ile 100 puan aralığına dönüştürülür.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">KPSS'de 4 Yanlış 1 Doğruyu Götürür mü?</summary>
+          <div class="faq-answer">
+            <p>Evet, KPSS'de uygulanan kural gereği her test kendi içinde değerlendirilir ve yaptığınız her 4 yanlış cevap, 1 doğru cevabınızı (0.25 net azaltarak) götürür. Boş bırakılan (işaretlenmeyen) sorular net hesabınızı ya da puanınızı olumsuz etkilemez.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">Standart Sapma KPSS Puanını Nasıl Etkiler?</summary>
+          <div class="faq-answer">
+            <p>Standart sapma, bir testteki soruların Türkiye genelindeki yapılabilme zorluğunu ölçer. Çok az adayın doğru yanıtladığı veya genel olarak düşük net yapılan zor bir testten yüksek net elde etmek, standart sapma etkisiyle puanınızı ortalamanın üzerine taşıyacak ve puan artışı sağlayacaktır.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">P1, P2, P3, P93 ve P94 Puan Türleri Ne Demektir?</summary>
+          <div class="faq-answer">
+            <p><strong>KPSS P3:</strong> Lisans mezunlarının B Grubu kadrolara (düz memurluk, mühendislik vb.) başvurularında kullanılır.<br>
+            <strong>KPSS P93:</strong> Önlisans mezunları için B Grubu kadrolarda geçerlidir.<br>
+            <strong>KPSS P94:</strong> Ortaöğretim (lise) mezunları için B Grubu memurluk alımlarında geçerlidir.<br>
+            <strong>P1 ve P2:</strong> Genel Yetenek ağırlıklı hesaplanan, mühendislik ve bazı kurum içi uzman kadroları için kullanılan puan türleridir.</p>
+          </div>
+        </details>
+
+      </div>
+    </section>
 
     <footer>
       <p>&copy; 2026 KPSS Net & Puan Hesaplama Robotu. Tüm hakları saklıdır.</p>
@@ -1155,125 +1277,3 @@
         const val = inputValues[sub.id] || { d: 0, y: 0, net: 0, max: sub.max };
         if (sub.id === 'turkce' || sub.id === 'matematik') {
           gyCorrect += val.d;
-          gyIncorrect += val.y;
-          gyNets += (val.d - val.y * 0.25);
-          gyMax += sub.max;
-        } else {
-          gkCorrect += val.d;
-          gkIncorrect += val.y;
-          gkNets += (val.d - val.y * 0.25);
-          gkMax += sub.max;
-        }
-      });
-
-      let ebCorrect = 0, ebIncorrect = 0, ebNets = 0, ebMax = 80;
-      let hukukCorrect = 0, hukukIncorrect = 0, hukukNets = 0, hukukMax = 40;
-      let iktisatCorrect = 0, iktisatIncorrect = 0, iktisatNets = 0, iktisatMax = 40;
-      let maliyeCorrect = 0, maliyeIncorrect = 0, maliyeNets = 0, maliyeMax = 40;
-      let kamuCorrect = 0, kamuIncorrect = 0, kamuNets = 0, kamuMax = 40;
-
-      if (currentExamType === 'lisans' && isAdvancedOpen) {
-        const ebVal = inputValues['eb'] || { d: 0, y: 0 };
-        ebCorrect = ebVal.d;
-        ebIncorrect = ebVal.y;
-        ebNets = ebVal.d - ebVal.y * 0.25;
-
-        const hukVal = inputValues['hukuk'] || { d: 0, y: 0 };
-        hukukCorrect = hukVal.d;
-        hukukIncorrect = hukVal.y;
-        hukukNets = hukVal.d - hukVal.y * 0.25;
-
-        const iktVal = inputValues['iktisat'] || { d: 0, y: 0 };
-        iktisatCorrect = iktVal.d;
-        iktisatIncorrect = iktVal.y;
-        iktisatNets = iktVal.d - iktVal.y * 0.25;
-
-        const malVal = inputValues['maliye'] || { d: 0, y: 0 };
-        maliyeCorrect = malVal.d;
-        maliyeIncorrect = malVal.y;
-        maliyeNets = malVal.d - malVal.y * 0.25;
-
-        const kamVal = inputValues['kamu'] || { d: 0, y: 0 };
-        kamuCorrect = kamVal.d;
-        kamuIncorrect = kamVal.y;
-        kamuNets = kamVal.d - kamVal.y * 0.25;
-      }
-
-      const totalCorrect = gyCorrect + gkCorrect + (isAdvancedOpen ? (ebCorrect + hukukCorrect + iktisatCorrect + maliyeCorrect + kamuCorrect) : 0);
-      const totalIncorrect = gyIncorrect + gkIncorrect + (isAdvancedOpen ? (ebIncorrect + hukukIncorrect + iktisatIncorrect + maliyeIncorrect + kamuIncorrect) : 0);
-      const totalNet = (gyNets + gkNets) + (isAdvancedOpen ? (ebNets + hukukNets + iktisatNets + maliyeNets + kamuNets) : 0);
-
-      summaryCorrect.textContent = totalCorrect;
-      summaryIncorrect.textContent = totalIncorrect;
-      summaryNet.textContent = totalNet.toFixed(2);
-
-      const scores = scoreConfigs[currentExamType];
-      let scoresHtml = '';
-
-      scores.forEach(score => {
-        let ratio = 0;
-        let requiresAdvancedInput = false;
-
-        let gyRatio = Math.max(0, gyNets / gyMax);
-        let gkRatio = Math.max(0, gkNets / gkMax);
-        let ebRatio = Math.max(0, ebNets / ebMax);
-        let hukukRatio = Math.max(0, hukukNets / hukukMax);
-        let iktisatRatio = Math.max(0, iktisatNets / iktisatMax);
-        let maliyeRatio = Math.max(0, maliyeNets / maliyeMax);
-        let kamuRatio = Math.max(0, kamuNets / kamuMax);
-
-        const w = score.weights;
-        ratio += w.gy * gyRatio;
-        ratio += w.gk * gkRatio;
-
-        if (w.eb !== undefined) {
-          if (!isAdvancedOpen) requiresAdvancedInput = true;
-          ratio += w.eb * ebRatio;
-        }
-        if (w.hukuk !== undefined) {
-          if (!isAdvancedOpen) requiresAdvancedInput = true;
-          ratio += w.hukuk * hukukRatio;
-        }
-        if (w.iktisat !== undefined) {
-          if (!isAdvancedOpen) requiresAdvancedInput = true;
-          ratio += w.iktisat * iktisatRatio;
-        }
-        if (w.maliye !== undefined) {
-          if (!isAdvancedOpen) requiresAdvancedInput = true;
-          ratio += w.maliye * maliyeRatio;
-        }
-        if (w.kamu !== undefined) {
-          if (!isAdvancedOpen) requiresAdvancedInput = true;
-          ratio += w.kamu * kamuRatio;
-        }
-
-        let calculatedPuan = 50 + 50 * ratio;
-        calculatedPuan = Math.max(50, Math.min(100, calculatedPuan));
-
-        const highlightClass = score.highlighted ? 'highlighted' : '';
-        const badgeClass = score.highlighted ? 'popular' : 'advanced-type';
-        const displayScore = requiresAdvancedInput 
-          ? `<span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Alan Neti Gerekli</span>` 
-          : calculatedPuan.toFixed(2);
-
-        scoresHtml += `
-          <div class="score-row-card ${highlightClass}">
-            <div class="score-details">
-              <div class="score-title-group">
-                <span class="score-name">${score.name}</span>
-                <span class="score-badge ${badgeClass}">${score.tag}</span>
-              </div>
-              <span class="score-desc">${score.desc}</span>
-            </div>
-            <div class="score-result-val">${displayScore}</div>
-          </div>
-        `;
-      });
-
-      scoresList.innerHTML = scoresHtml;
-    }
-
-    window.addEventListener('DOMContentLoaded', init);
-  </script>
-</body>
-</html>
